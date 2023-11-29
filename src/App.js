@@ -1,54 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import BotCollection from './components/BotCollection';
-import YourBotArmy from './components/YourBotArmy';
+import React, { useState, useEffect } from "react";
+import BotCollection from "./components/BotCollection";
+import BotArmy from "./components/BotArmy";
+import "./App.css";
 
-const App = () => {
+function App() {
   const [bots, setBots] = useState([]);
-  const [army, setArmy] = useState([]);
+  const [enlistedBots, setEnlistedBots] = useState([]); 
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    // Fetch data from the API
+    fetch('https://my-json-server.typicode.com/martinwakaba/Bot-Battlr/bots')
+    .then((resp) => resp.json())
+    .then((data) => setBots(data))
+    .catch((error) => console.error('Error fetching data:', error));
+}, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/comments/bots');
-      setBots(response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const enlistBot = (bot) => {
-    if (!army.find((b) => b.id === bot.id)) {
-      setArmy([...army, bot]);
-    }
-  };
-
-  const releaseBot = (botId) => {
-    const updatedArmy = army.filter((bot) => bot.id !== botId);
-    setArmy(updatedArmy);
-  };
-
-  const dischargeBot = async (botId) => {
-    try {
-      await axios.delete(`http://localhost:3000/comments/bots`);
-      releaseBot(botId); // Remove from army after successful deletion
-    } catch (error) {
-      console.error('Error discharging bot:', error);
-    }
-  };
-
-  return (
-    <div>
-      <h1>Bot Battlr</h1>
-      <div className="container">
-        <BotCollection bots={bots} enlistBot={enlistBot} />
-        <YourBotArmy army={army} releaseBot={releaseBot} dischargeBot={dischargeBot} />
-      </div>
-    </div>
-  );
+const releaseFromArmy = (updatedEnlistedBots) => {
+  // Implement the logic to release bots from the army
+  setEnlistedBots(updatedEnlistedBots);
 };
 
-export default App;
+function handleBotDischarge(bot) {
+  // Remove the bot from enlistedBots in the frontend
+  const updatedEnlistedBots = enlistedBots.filter((enlistedBot) => enlistedBot.id !== bot.id);
+  setEnlistedBots(updatedEnlistedBots);
+}
+ 
+
+  return (
+    <div className="App">
+       <BotArmy 
+        enlistedBots={enlistedBots} 
+        releaseFromYourBotArmy={releaseFromArmy}/> 
+
+      <BotCollection
+       bots={bots} 
+       enlistedBots={enlistedBots} 
+       setEnlistedBots={setEnlistedBots}
+       handleBotDischarge={handleBotDischarge}
+      />
+      
+      
+    </div>
+  );
+}
+export default App

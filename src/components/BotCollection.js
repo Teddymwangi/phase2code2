@@ -1,20 +1,23 @@
-import React from 'react';
+import React from "react";
 
-const BotCollection = ({ bots, enlistBot }) => {
+import SingleBot from "./SingleBot";
+
+export default function BotCollection({ bots, enlistedBots, setEnlistedBots, handleBotDischarge  }) {
   return (
-    <div className="bot-collection">
-      <h2>All Bots</h2>
-      <ul>
+    <div className="BotCollection">
+      <h2>Bot Battlr | Bot Collection</h2>
+      <ul className="bot-collection">
         {bots.map((bot) => (
           <li key={bot.id}>
-            <img src={bot.avatar_url} alt={bot.name} />
-            <h3>{bot.name}</h3>
-            <button onClick={() => enlistBot(bot)}>Add to Army</button>
+            <SingleBot
+              bot={bot}
+              enlistedBots={enlistedBots}
+              setEnlistedBots={setEnlistedBots}
+              handleBotDischarge={handleBotDischarge}
+            />
           </li>
         ))}
       </ul>
     </div>
   );
-};
-
-export default BotCollection;
+}
